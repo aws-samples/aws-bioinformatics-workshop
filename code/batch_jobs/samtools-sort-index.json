@@ -1,0 +1,21 @@
+{
+    "jobName": "samtoolsSort",
+    "jobQueue": "bioinformatics-default-queue",
+    "jobDefinition": "biotech-samtools:1",
+    "containerOverrides": {
+        "command": ["samtools sort -@ 4 -o SRR014820.bam SRR014820.sam; samtools index SRR014820.bam"],
+        "environment": [{
+                "name": "JOB_INPUTS",
+                "value": "s3://YOUR-BUCKET-NAME/output/SRR014820/SRR014820.sam"
+            },
+            {
+                "name": "JOB_OUTPUTS",
+                "value": "*.bam *.bai"
+            },
+            {
+                "name": "JOB_OUTPUT_PREFIX",
+                "value": "s3://YOUR-BUCKET-NAME/output/SRR014820"
+            }
+        ]
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "jobName": "bcftoolsMpileup",
+    "jobQueue": "bioinformatics-default-queue",
+    "jobDefinition": "biotech-bcftools:1",
+    "containerOverrides": {
+        "command": ["bcftools mpileup --threads 2 -r chr19 -Oz -f Homo_sapiens_assembly38.fasta -o SRR014820.chr19.mpileup.gz SRR014820.bam; bcftools call -m --threads 2 -t chr19 -Oz -o SRR014820.chr19.vcf.gz SRR014820.chr19.mpileup.gz"],
+        "environment": [{
+                "name": "JOB_INPUTS",
+                "value": "s3://broad-references/hg38/v0/Homo_sapiens_assembly38.fasta* s3://YOUR-BUCKET-NAME/output/SRR014820/*.bam*"
+            },
+            {
+                "name": "JOB_OUTPUTS",
+                "value": "*.mpileup.gz *.vcf.gz"
+            },
+            {
+                "name": "JOB_OUTPUT_PREFIX",
+                "value": "s3://YOUR-BUCKET-NAME/output/SRR014820"
+            }
+        ]
+    }
+}

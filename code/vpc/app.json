@@ -1,0 +1,7 @@
+{
+    "region": "us-west-2",
+    "accountId": "111111111111",
+    "vpcName": "biotech-vpc",
+    "cidr": "10.0.0.0/16",
+    "maxAzs": 2
+}

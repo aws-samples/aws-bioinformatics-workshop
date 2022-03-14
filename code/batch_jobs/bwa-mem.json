@@ -1,0 +1,21 @@
+{
+    "jobName": "bwa",
+    "jobQueue": "bioinformatics-default-queue",
+    "jobDefinition": "biotech-bwa:1",
+    "containerOverrides": {
+        "command": ["bwa mem -t 16 -p -o SRR014820.sam Homo_sapiens_assembly38.fasta SRR014820_*1*.fastq.gz"],
+        "environment": [{
+                "name": "JOB_INPUTS",
+                "value": "s3://1000genomes/pilot_data/data/NA12878/pilot3_unrecal/SRR014820_*.fastq.gz s3://broad-references/hg38/v0/Homo_sapiens_assembly38.fasta*"
+            },
+            {
+                "name": "JOB_OUTPUTS",
+                "value": "*.sam"
+            },
+            {
+                "name": "JOB_OUTPUT_PREFIX",
+                "value": "s3://YOUR-BUCKET-NAME/output/SRR014820"
+            }
+        ]
+    }
+}
