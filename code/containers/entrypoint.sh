@@ -61,6 +61,12 @@
 #       If copying files to an S3 bucket, choose the method for the copy
 #           s3cp: use s3 cp --no-progress file (a file from the JOB_OUTPUTS)
 #           s3sync: use s3 sync LOCAL_PATH JOB_OUTPUT_PREFIX (Sync a local path to the JOB_OUTPUT_PREFIX location)
+#
+#   DISABLE_CLEANUP
+#       Optional
+#       Default: false
+#       The stage out process will cleanup the working folder. To disable the 
+#       cleanup process, set this option to 'true'
 
 set -e  # exit on error
 
@@ -176,6 +182,13 @@ function stage_out() (
             fi
         fi
     done
+    
+    if [[ $DISABLE_CLEANUP && $DISABLE_CLEANUP == 'true' ]]; then
+        echo "Working folder cleanup is disabled"
+    else
+        echo "Cleaning up the working folder"
+        rm -v -r ./*
+    fi
 )
 
 # Command is specified in the JobSubmission container overrides.
