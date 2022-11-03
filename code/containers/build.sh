@@ -1,11 +1,18 @@
 #!/bin/bash
 set -e
 
-DEFAULT_PROJECT_NAME="genomics"
+# Get the current AWS id
+AWS_ACCOUNT=`aws sts get-caller-identity | grep 'Account' | grep -P -o '\d{12}'`
+
+# Set a default namespace to register the container with ECR
+DEFAULT_PROJECT_NAME="biotech"
+
+
 IMAGE_NAME=$1
-PROJECT_NAME="${2:-$DEFAULT_PROJECT_NAME}"
+AWS_REGION=$2
+PROJECT_NAME="${3:-$DEFAULT_PROJECT_NAME}"
 DOCKER_FILE_PATH="./${IMAGE_NAME}/Dockerfile"
-REGISTRY="$CDK_DEFAULT_ACCOUNT.dkr.ecr.$CDK_DEFAULT_REGION.amazonaws.com"
+REGISTRY="$AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com"
 REPOSITORY_NAME="${PROJECT_NAME}/${IMAGE_NAME}"
 IMAGE_TAG=":latest"
 IMAGE_WITH_TAG="${IMAGE_NAME}${IMAGE_TAG}"
@@ -13,33 +20,30 @@ REGISTRY_PATH="${REGISTRY}/${REPOSITORY_NAME}"
 REGISTRY_PATH_WITH_TAG="${REGISTRY}/${PROJECT_NAME}/${IMAGE_WITH_TAG}"
 
 
-if [ -z "${IMAGE_NAME}" ]
-then
+if [[ -z "${IMAGE_NAME}" ]]; then
     echo "Missing image name parameter."
     exit 1
 fi
 
-if [[ ! -f "${DOCKER_FILE_PATH}" ]]
-then
+if [[ ! -f "${DOCKER_FILE_PATH}" ]]; then
     echo "${DOCKER_FILE_PATH} does not exist on the filesystem."
     exit 1
 fi
 
-if [ -z "$CDK_DEFAULT_ACCOUNT" ]
-then
-    echo "Missing CDK_DEFAULT_ACCOUNT environment variable."
-    exit 1
-fi
-
-if [ -z "$CDK_DEFAULT_REGION" ]
-then
-    echo "Missing CDK_DEFAULT_REGION environment variable."
+if [[ -z $AWS_REGION ]]; then
+    echo "Missing AWS Region parameter."
     exit 1
 fi
 
 
-echo "Docker Login to ECR"
-eval $(aws ecr get-login --no-include-email --region ${CDK_DEFAULT_REGION})
+LOGIN_RESULT=`eval $(aws ecr get-login --no-include-email --region ${AWS_REGION})`
+
+if [[ ! $LOGIN_RESULT = "Login Succeeded" ]]; then
+    echo "Login to ECR using region ${AWS_REGION} failed"
+    exit 1
+else
+    echo "Login to ECR successful"
+fi
 
 
 # Check if the repository exists in ECR and if not, create it

@@ -1,0 +1,47 @@
+{
+  "containerProperties": {
+    "command": [],
+    "image": "REPLACE_WITH_IMAGE_FROM_ECR",
+    "resourceRequirements": [
+      {
+        "type": "VCPU",
+        "value": "4"
+      },
+      {
+        "type": "MEMORY",
+        "value": "8000"
+      }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume": "awscli",
+        "containerPath": "/opt/aws-cli",
+        "readOnly": false
+      }
+    ],
+    "volumes": [
+      {
+        "name": "awscli",
+        "host": {
+          "sourcePath": "/opt/aws-cli"
+        }
+      }
+    ]
+  },
+  "platformCapabilities": [
+    "EC2"
+  ],
+  "tags": {
+    "Environment": "Dev",
+    "Project": "Biotech"
+  },
+  "propagateTags": true,
+  "type": "container",
+  "jobDefinitionName": "biotech-samtools",
+  "timeout": {
+    "attemptDurationSeconds": 300
+  },
+  "retryStrategy": {
+    "attempts": 1
+  }
+}

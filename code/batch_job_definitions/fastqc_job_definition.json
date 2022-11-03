@@ -1,0 +1,47 @@
+{
+  "containerProperties": {
+    "command": [],
+    "image": "REPLACE_WITH_IMAGE_FROM_ECR",
+    "resourceRequirements": [
+      {
+        "type": "VCPU",
+        "value": "1"
+      },
+      {
+        "type": "MEMORY",
+        "value": "1000"
+      }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume": "awscli",
+        "containerPath": "/opt/aws-cli",
+        "readOnly": false
+      }
+    ],
+    "volumes": [
+      {
+        "name": "awscli",
+        "host": {
+          "sourcePath": "/opt/aws-cli"
+        }
+      }
+    ]
+  },
+  "platformCapabilities": [
+    "EC2"
+  ],
+  "tags": {
+    "Environment": "Dev",
+    "Project": "Biotech"
+  },
+  "propagateTags": true,
+  "type": "container",
+  "jobDefinitionName": "biotech-fastqc",
+  "timeout": {
+    "attemptDurationSeconds": 600
+  },
+  "retryStrategy": {
+    "attempts": 1
+  }
+}

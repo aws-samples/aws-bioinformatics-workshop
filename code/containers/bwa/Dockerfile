@@ -1,10 +1,10 @@
-FROM public.ecr.aws/lts/ubuntu:18.04 AS build
+FROM public.ecr.aws/lts/ubuntu:22.04 AS build
 
 ARG BWA_VERSION=0.7.17
 
 RUN apt-get update -y \
  && apt-get install -y \
-    wget \
+    git \
     make \
     gcc \
     zlib1g-dev \
@@ -12,19 +12,15 @@ RUN apt-get update -y \
 
 
 WORKDIR /opt/src
-RUN wget https://github.com/lh3/bwa/releases/download/v${BWA_VERSION}/bwa-${BWA_VERSION}.tar.bz2 \
- && tar -xjvf bwa-*.tar.bz2 \
- && cd bwa-* \
- && make \
- && cp bwa /opt/src
+RUN git clone https://github.com/lh3/bwa.git \
+ && cd bwa \
+ && make
 
 
-FROM public.ecr.aws/lts/ubuntu:18.04 AS final
+FROM public.ecr.aws/lts/ubuntu:22.04 AS final
 
 RUN apt-get update -y \
  && apt-get install -y \
-    wget \
-    make \
     zlib1g \
     bzip2 \
  && apt-get clean

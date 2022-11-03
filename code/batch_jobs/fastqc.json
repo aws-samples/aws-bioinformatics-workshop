@@ -14,7 +14,7 @@
             },
             {
                 "name": "JOB_OUTPUT_PREFIX",
-                "value": "s3://BUCKET_NAME/output/SRR014820"
+                "value": "s3://YOUR-BUCKET-NAME/output/SRR014820"
             }
         ]
     }

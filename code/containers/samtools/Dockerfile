@@ -1,9 +1,9 @@
-FROM public.ecr.aws/lts/ubuntu:18.04 AS build
+FROM public.ecr.aws/lts/ubuntu:22.04 AS build
 
-ARG VERSION=1.9
+ARG VERSION=1.16.1
 
 # Metadata
-LABEL container.base.image="ubuntu:18.04"
+LABEL container.base.image="public.ecr.aws/lts/ubuntu:22.04"
 LABEL software.name="SAMtools"
 LABEL software.version=${VERSION}
 LABEL software.description="Utilities for the Sequence Alignment/Map (SAM/BAM/CRAM) formats"
@@ -26,18 +26,21 @@ RUN apt-get -y update && \
       libcurl4-gnutls-dev \
       libssl-dev \
       libncurses5-dev \
+      bzip2 \
       wget && \
     apt-get clean
 
 # Application installation
 RUN wget -O /samtools-${VERSION}.tar.bz2 \
-  https://github.com/samtools/samtools/releases/download/${VERSION}/samtools-${VERSION}.tar.bz2 && \
-  tar xvjf /samtools-${VERSION}.tar.bz2 && rm /samtools-${VERSION}.tar.bz2
+  https://github.com/samtools/samtools/releases/download/${VERSION}/samtools-${VERSION}.tar.bz2 
+
+RUN tar xvjf /samtools-${VERSION}.tar.bz2
+RUN rm /samtools-${VERSION}.tar.bz2
 
 WORKDIR /samtools-${VERSION}
 RUN ./configure && make
 
-FROM public.ecr.aws/lts/ubuntu:18.04 AS final
+FROM public.ecr.aws/lts/ubuntu:22.04 AS final
 COPY --from=build /samtools-*/samtools /usr/local/bin
 
 RUN apt-get -y update && \

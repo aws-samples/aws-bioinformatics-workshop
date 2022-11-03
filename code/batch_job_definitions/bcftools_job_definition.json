@@ -1,0 +1,47 @@
+{
+  "containerProperties": {
+    "command": [],
+    "image": "REPLACE_WITH_IMAGE_FROM_ECR",
+    "resourceRequirements": [
+      {
+        "type": "VCPU",
+        "value": "2"
+      },
+      {
+        "type": "MEMORY",
+        "value": "8000"
+      }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume": "awscli",
+        "containerPath": "/opt/aws-cli",
+        "readOnly": false
+      }
+    ],
+    "volumes": [
+      {
+        "name": "awscli",
+        "host": {
+          "sourcePath": "/opt/aws-cli"
+        }
+      }
+    ]
+  },
+  "platformCapabilities": [
+    "EC2"
+  ],
+  "tags": {
+    "Environment": "Dev",
+    "Project": "Biotech"
+  },
+  "propagateTags": true,
+  "type": "container",
+  "jobDefinitionName": "biotech-bcftools",
+  "timeout": {
+    "attemptDurationSeconds": 1200
+  },
+  "retryStrategy": {
+    "attempts": 1
+  }
+}
