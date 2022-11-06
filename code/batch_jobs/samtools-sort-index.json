@@ -5,8 +5,8 @@
     "containerOverrides": {
         "command": ["samtools sort -@ 4 -o SRR014820.bam SRR014820.sam; samtools index SRR014820.bam"],
         "environment": [{
-                "name": "JOB_INPUTS",
-                "value": "s3://YOUR-BUCKET-NAME/output/SRR014820/SRR014820.sam"
+                "name": "WORKING_DIRECTORY",
+                "value": "/mnt/fsx/SRR014820"
             },
             {
                 "name": "JOB_OUTPUTS",

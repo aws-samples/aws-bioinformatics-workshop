@@ -17,6 +17,11 @@
         "sourceVolume": "awscli",
         "containerPath": "/opt/aws-cli",
         "readOnly": false
+      },
+      {
+        "sourceVolume": "data",
+        "containerPath": "/mnt/fsx",
+        "readOnly": false
       }
     ],
     "volumes": [
@@ -24,6 +29,12 @@
         "name": "awscli",
         "host": {
           "sourcePath": "/opt/aws-cli"
+        }
+      },
+      {
+         "name": "data",
+         "host": {
+          "sourcePath": "/mnt/fsx"
         }
       }
     ]

@@ -62,11 +62,13 @@
 #           s3cp: use s3 cp --no-progress file (a file from the JOB_OUTPUTS)
 #           s3sync: use s3 sync LOCAL_PATH JOB_OUTPUT_PREFIX (Sync a local path to the JOB_OUTPUT_PREFIX location)
 #
-#   DISABLE_CLEANUP
+#   WORKING_DIRECTORY
 #       Optional
-#       Default: false
-#       The stage out process will cleanup the working folder. To disable the 
-#       cleanup process, set this option to 'true'
+#       Default: The container working directory
+#       Set an alternative working directory, useful when the host machine has 
+#       an external mount using FSx, EFS, etc.
+
+
 
 set -e  # exit on error
 
@@ -74,6 +76,12 @@ if [[ $JOB_VERBOSE ]]; then
     set -x  # enable echo
 fi
 
+# If WORKING_DIRECTORY is set and valid, change directory to the WORKING_DIRECTORY
+if [[ $WORKING_DIRECTORY && -d "$WORKING_DIRECTORY" ]]; then
+    cd $WORKING_DIRECTORY
+fi
+
+WORKING_FOLDER=`pwd`
 DEFAULT_AWS_CLI_PATH=/opt/aws-cli/bin
 AWS_CLI_PATH=${JOB_AWS_CLI_PATH:-$DEFAULT_AWS_CLI_PATH}
 PATH=$PATH:$AWS_CLI_PATH
@@ -112,14 +120,14 @@ function stage_in() (
         item=`echo $item | envsubst`
         if [[ $item =~ ^s3:// ]]; then
             if [[ $JOB_INPUT_S3_COPY_METHOD && $JOB_INPUT_S3_COPY_METHOD == 's3sync' ]]; then
-                echo "[input][s3sync] remote: $item ==> ./"
+                echo "[input][s3sync] remote: $item ==> $WORKING_FOLDER/"
                 
                 aws s3 sync $item .
             else
                 local item_key=`basename $item`
                 local item_prefix=`dirname $item`
 
-                echo "[input][s3cp] remote: $item ==> ./$item_key"
+                echo "[input][s3cp] remote: $item ==> $WORKING_FOLDER/$item_key"
                 
                 aws s3 cp \
                     --no-progress \
@@ -129,7 +137,7 @@ function stage_in() (
                     ${item_prefix} .
             fi
         elif [[ $item =~ ^https?:// ]]; then
-            echo "[input][url] $item ==> ./"
+            echo "[input][url] $item ==> $WORKING_FOLDER/"
         
             wget $item
         else
@@ -161,11 +169,11 @@ function stage_out() (
                 fi
 
                 if [[ $JOB_OUTPUT_S3_COPY_METHOD && $JOB_OUTPUT_S3_COPY_METHOD == 's3sync' ]]; then
-                    echo "[output][s3sync] remote: $item ==> $output_prefix/"
+                    echo "[output][s3sync] remote: $WORKING_FOLDER/$item ==> $output_prefix/"
                     
                     aws s3 sync $item $output_prefix/
                 else
-                    echo "[output][s3cp] remote: ./$item ==> $output_prefix/${item_key}"
+                    echo "[output][s3cp] remote: $WORKING_FOLDER/$item ==> $output_prefix/${item_key}"
 
                     aws s3 cp \
                         --no-progress \
@@ -177,18 +185,11 @@ function stage_out() (
                 echo "[output] ERROR: unsupported remote output destination $JOB_OUTPUT_PREFIX" 1>&2
 
             else
-                echo "[output] local: ./$item"
+                echo "[output] local: $WORKING_FOLDER/$item"
 
             fi
         fi
     done
-    
-    if [[ $DISABLE_CLEANUP && $DISABLE_CLEANUP == 'true' ]]; then
-        echo "Working folder cleanup is disabled"
-    else
-        echo "Cleaning up the working folder"
-        rm -v -r ./*
-    fi
 )
 
 # Command is specified in the JobSubmission container overrides.

@@ -4,9 +4,10 @@
     "jobDefinition": "biotech-fastqc:1",
     "containerOverrides": {
         "command": ["fastqc *.gz"],
-        "environment": [{
-                "name": "JOB_INPUTS",
-                "value": "s3://1000genomes/pilot_data/data/NA12878/pilot3_unrecal/SRR014820_*.fastq.gz"
+        "environment": [
+            {
+                "name": "WORKING_DIRECTORY",
+                "value": "/mnt/fsx/SRR014820"
             },
             {
                 "name": "JOB_OUTPUTS",
