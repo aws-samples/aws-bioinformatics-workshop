@@ -8,6 +8,14 @@
             {
                 "name": "WORKING_DIRECTORY",
                 "value": "/mnt/fsx/SRR014820"
+            },
+            {
+                "name": "JOB_OUTPUTS",
+                "value": "*.sam"
+            },
+            {
+                "name": "JOB_OUTPUT_PREFIX",
+                "value": "s3://YOUR-BUCKET-NAME/output/SRR014820"
             }
         ]
     }
