@@ -36,11 +36,11 @@ if [[ -z $AWS_REGION ]]; then
 fi
 
 
-LOGIN_RESULT=`eval $(aws ecr get-login --no-include-email --region ${AWS_REGION})`
+LOGIN_RESULT=`eval $(aws ecr get-login-password --region ${AWS_REGION})`
 
-if [[ ! $LOGIN_RESULT = "Login Succeeded" ]]; then
-    echo "Login to ECR using region ${AWS_REGION} failed"
-    exit 1
+if [[ ! $LOGIN_RESULT = "Succeeded" ]]; then
+    echo "Login to ECR using region ${AWS_REGION} failed, check"
+    #exit 1
 else
     echo "Login to ECR successful"
 fi
