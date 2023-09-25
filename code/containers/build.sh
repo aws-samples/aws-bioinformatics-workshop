@@ -36,15 +36,14 @@ if [[ -z $AWS_REGION ]]; then
 fi
 
 
-LOGIN_RESULT=`eval $(aws ecr get-login-password --region ${AWS_REGION})`
+LOGIN_RESULT=`aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com`
 
-if [[ ! $LOGIN_RESULT = "Succeeded" ]]; then
-    echo "Login to ECR using region ${AWS_REGION} failed, check"
-    #exit 1
+if [[ ! $LOGIN_RESULT = "Login Succeeded" ]]; then
+    echo "Login to ECR using region ${AWS_REGION} failed"
+    exit 1
 else
     echo "Login to ECR successful"
 fi
-
 
 # Check if the repository exists in ECR and if not, create it
 REPO=`aws ecr describe-repositories | grep -o ${REGISTRY_PATH}` || true
