@@ -35,12 +35,11 @@ if [[ -z $AWS_REGION ]]; then
     exit 1
 fi
 
-
-LOGIN_RESULT=`eval $(aws ecr get-login-password --region ${AWS_REGION})`
+LOGIN_RESULT=`aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com`
 
 if [[ ! $LOGIN_RESULT = "Login Succeeded" ]]; then
     echo "Login to ECR using region ${AWS_REGION} failed"
-    #exit 1
+    exit 1
 else
     echo "Login to ECR successful"
 fi
