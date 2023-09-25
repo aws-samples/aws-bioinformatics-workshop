@@ -1,0 +1,8 @@
+{
+    "inputDir": {
+        "description": "Input directory"
+    },
+    "fastqcImage": {
+        "description": "fastqc tool"
+    }
+}                     

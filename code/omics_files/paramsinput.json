@@ -1,0 +1,5 @@
+                     
+{
+    "inputDir": "s3://biotech-research-files-REPLACE_WITH_ACCOUNT_ID/SRR014820/SRR014820_1.fastq.gz",
+    "fastqcImage": "REPLACE_WITH_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/biotechv2/fastqcho"
+}    
