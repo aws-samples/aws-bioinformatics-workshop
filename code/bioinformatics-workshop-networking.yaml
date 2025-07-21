@@ -1,0 +1,300 @@
+Resources:
+  BiotechVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: biotech-vpc
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.1.0/24
+      VpcId:
+        Ref: BiotechVpc
+      AvailabilityZone: !Select
+        - 0
+        - Fn::GetAZs: !Ref "AWS::Region"
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PrivateSubnet1
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPrivateSubnet1RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: BiotechVpc
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PrivateSubnet1
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: BiotechVpcPrivateSubnet1RouteTable
+      SubnetId:
+        Ref: BiotechVpcPrivateSubnet1
+  BiotechVpcPrivateSubnet1DefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: BiotechVpcPrivateSubnet1RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: BiotechVpcPublicSubnet1NATGateway
+  BiotechVpcPrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.3.0/24
+      VpcId:
+        Ref: BiotechVpc
+      AvailabilityZone: !Select
+        - 1
+        - Fn::GetAZs: !Ref "AWS::Region"
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PrivateSubnet2
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPrivateSubnet2RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: BiotechVpc
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PrivateSubnet2
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: BiotechVpcPrivateSubnet2RouteTable
+      SubnetId:
+        Ref: BiotechVpcPrivateSubnet2
+  BiotechVpcPrivateSubnet2DefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: BiotechVpcPrivateSubnet2RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: BiotechVpcPublicSubnet2NATGateway
+  BiotechVpcPublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.2.0/24
+      VpcId:
+        Ref: BiotechVpc
+      AvailabilityZone: !Select
+        - 0
+        - Fn::GetAZs: !Ref "AWS::Region"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PublicSubnet1
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPublicSubnet1RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: BiotechVpc
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PublicSubnet1
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: BiotechVpcPublicSubnet1RouteTable
+      SubnetId:
+        Ref: BiotechVpcPublicSubnet1
+  BiotechVpcPublicSubnet1DefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: BiotechVpcPublicSubnet1RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: BiotechVpcIGW
+    DependsOn:
+      - BiotechVpcVPCGWA
+  BiotechVpcPublicSubnet1EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PublicSubnet1
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPublicSubnet1NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId:
+        Ref: BiotechVpcPublicSubnet1
+      AllocationId:
+        Fn::GetAtt:
+          - BiotechVpcPublicSubnet1EIP
+          - AllocationId
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PublicSubnet1
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.4.0/24
+      VpcId:
+        Ref: BiotechVpc
+      AvailabilityZone: !Select
+        - 1
+        - Fn::GetAZs: !Ref "AWS::Region"
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PublicSubnet2
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPublicSubnet2RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: BiotechVpc
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PublicSubnet2
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: BiotechVpcPublicSubnet2RouteTable
+      SubnetId:
+        Ref: BiotechVpcPublicSubnet2
+  BiotechVpcPublicSubnet2DefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: BiotechVpcPublicSubnet2RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: BiotechVpcIGW
+    DependsOn:
+      - BiotechVpcVPCGWA
+  BiotechVpcPublicSubnet2EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PublicSubnet2
+        - Key: Project
+          Value: Biotech
+  BiotechVpcPublicSubnet2NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId:
+        Ref: BiotechVpcPublicSubnet2
+      AllocationId:
+        Fn::GetAtt:
+          - BiotechVpcPublicSubnet2EIP
+          - AllocationId
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: PublicSubnet2
+        - Key: Project
+          Value: Biotech
+  BiotechVpcIGW:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Environment
+          Value: Dev
+        - Key: Name
+          Value: biotech-vpc
+        - Key: Project
+          Value: Biotech
+  BiotechVpcVPCGWA:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: BiotechVpc
+      InternetGatewayId:
+        Ref: BiotechVpcIGW
+
+  BiotechDefaultSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Default security group"
+      GroupName: "biotech-default"
+      VpcId: !Ref BiotechVpc
+
+  DefaultSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref BiotechDefaultSecurityGroup
+      SourceSecurityGroupId: !Ref BiotechDefaultSecurityGroup
+      IpProtocol: "tcp"
+      FromPort: 0
+      ToPort: 65535
+
+Outputs:
+  VpcId:
+    Value: !Ref BiotechVpc
+    Export:
+      Name: !Sub "${AWS::StackName}-VpcId"
+  SubnetId:
+    Value: !Ref BiotechVpcPublicSubnet1
+    Export:
+      Name: !Sub "${AWS::StackName}-SubnetId"
+  PrivateSubnetId:
+    Value: !Ref BiotechVpcPrivateSubnet1
+    Export:
+      Name: !Sub "${AWS::StackName}-PrivateSubnetId"
+  SecurityGroupId:
+    Value: !Ref BiotechDefaultSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-SecurityGroupId"
