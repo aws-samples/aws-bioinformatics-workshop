@@ -43,6 +43,7 @@ Parameters:
   BiotechResearchBucketArn:
     Type: String
     Description: ARN of the S3 bucket created for biotech research files (e.g., arn:aws:s3:::bucket-name)
+    Default: "arn:aws:s3:::default-biotech-research-bucket"
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -89,13 +90,15 @@ Metadata:
       InstanceOperatingSystem:
         default: Instance operating system
       HomeFolder:
-        default: VS code-server home folder
+        default: VSCode home folder
       DevServerBasePath:
         default: Application base path
       DevServerPort:
         default: Application port
       RepoUrl:
         default: Git repo URL
+      BiotechResearchBucketArn:
+        default: S3 Bucket ARN
 
 Mappings:
   RegionImage:
@@ -287,7 +290,7 @@ Resources:
               runCommand:
                 - "#!/bin/bash"
                 - dpkg --configure -a
-                - apt-get -q update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl gnupg whois argon2 unzip nginx openssl locales locales-all apt-transport-https ca-certificates software-properties-common
+                - apt-get -q update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q curl gnupg whois argon2 unzip nginx openssl locales locales-all apt-transport-https ca-certificates software-properties-common jq zip
           - name: AddUserDnf
             action: aws:runShellScript
             precondition:
@@ -738,10 +741,39 @@ Resources:
                   - "omics:ListTagsForResource"
                   - "omics:TagResource"
                   - "omics:UntagResource"
+                  - "omics:CreateAnnotationStore"
+                  - "omics:StartAnnotationImportJob"
+                  - "ram:AcceptResourceShareInvitation"
                   - "iam:GetRole"
+        - PolicyName: DrugDiscoveryWorkflows
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
                   - "iam:ListRoles"
                   - "iam:PassRole"
-                Resource: "*"
+                  - "iam:CreateRole"
+                  - "iam:PutRolePolicy"
+                  - "iam:TagRole"
+                  - "iam:AttachRolePolicy"
+                  - "kms:TagResource"
+                  - "kms:UntagResource"
+                  - "kms:CreateKey"
+                  - "kms:DescribeKey"
+                  - "kms:ListKeys"
+                  - "kms:PutKeyPolicy"
+                  - "kms:EnableKeyRotation"
+                  - "lambda:CreateFunction"
+                  - "lambda:TagResource"
+                  - "lambda:PutFunctionConcurrency"
+                  - "lambda:InvokeFunction"
+                  - "cloudformation:DeleteStack"
+                  - "codebuild:CreateProject"
+                  - "codebuild:UpdateProjectVisibility"
+                  - "cloudformation:CreateChangeSet"
+                  - "cloudformation:ExecuteChangeSet"
+                  - "cloudformation:CreateStack"
         - PolicyName: ECRAccess
           PolicyDocument:
             Version: "2012-10-17"
