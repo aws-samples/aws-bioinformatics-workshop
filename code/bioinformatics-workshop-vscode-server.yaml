@@ -745,6 +745,7 @@ Resources:
                   - "omics:StartAnnotationImportJob"
                   - "ram:AcceptResourceShareInvitation"
                   - "iam:GetRole"
+                Resource: "*"
         - PolicyName: DrugDiscoveryWorkflows
           PolicyDocument:
             Version: "2012-10-17"
@@ -752,28 +753,45 @@ Resources:
               - Effect: Allow
                 Action:
                   - "iam:ListRoles"
+                  - "iam:ListKeys"
+                Resource: "*"
+              - Effect: Allow
+                Action:
                   - "iam:PassRole"
                   - "iam:CreateRole"
                   - "iam:PutRolePolicy"
                   - "iam:TagRole"
                   - "iam:AttachRolePolicy"
+                Resource: !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*"
+              - Effect: Allow
+                Action:
                   - "kms:TagResource"
                   - "kms:UntagResource"
                   - "kms:CreateKey"
                   - "kms:DescribeKey"
-                  - "kms:ListKeys"
                   - "kms:PutKeyPolicy"
                   - "kms:EnableKeyRotation"
+                Resource: !Sub "arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/*"
+              - Effect: Allow
+                Action:
                   - "lambda:CreateFunction"
                   - "lambda:TagResource"
                   - "lambda:PutFunctionConcurrency"
                   - "lambda:InvokeFunction"
+                Resource: !Sub "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function/*"
+              - Effect: Allow
+                Action:
                   - "cloudformation:DeleteStack"
-                  - "codebuild:CreateProject"
-                  - "codebuild:UpdateProjectVisibility"
                   - "cloudformation:CreateChangeSet"
                   - "cloudformation:ExecuteChangeSet"
                   - "cloudformation:CreateStack"
+                Resource: !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+              - Effect: Allow
+                Action:
+                  - "codebuild:CreateProject"
+                  - "codebuild:UpdateProjectVisibility"
+                Resource: !Sub "arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/*"
+
         - PolicyName: ECRAccess
           PolicyDocument:
             Version: "2012-10-17"
@@ -1176,7 +1194,7 @@ Resources:
                               if invocation['DocumentName'] == document_name:
                                   invocation_status = invocation['Status']
                                   if invocation_status == 'Success':
-                                      logger.info(f'SSM Document {document_name} on EC2 instance {instance_id} complete. Status: {invocation_status}')                                  
+                                      logger.info(f'SSM Document {document_name} on EC2 instance {instance_id} complete. Status: {invocation_status}')
                                       cfnresponse.send(event, context, cfnresponse.SUCCESS, responseData={}, reason='OK')
                                       retry = False
                                   elif invocation_status == 'Failed' or invocation_status == 'Cancelled' or invocation_status == 'TimedOut':
