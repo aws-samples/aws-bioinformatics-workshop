@@ -1,7 +1,7 @@
 {
   "containerProperties": {
     "command": [],
-    "image": "REPLACE_WITH_IMAGE_FROM_ECR",
+    "image": "792480211720.dkr.ecr.us-west-2.amazonaws.com/biotech/fastqc",
     "resourceRequirements": [
       {
         "type": "VCPU",
@@ -14,11 +14,6 @@
     ],
     "mountPoints": [
       {
-        "sourceVolume": "awscli",
-        "containerPath": "/opt/aws-cli",
-        "readOnly": false
-      },
-      {
         "sourceVolume": "data",
         "containerPath": "/mnt/fsx",
         "readOnly": false
@@ -26,14 +21,8 @@
     ],
     "volumes": [
       {
-        "name": "awscli",
+        "name": "data",
         "host": {
-          "sourcePath": "/opt/aws-cli"
-        }
-      },
-      {
-         "name": "data",
-         "host": {
           "sourcePath": "/mnt/fsx"
         }
       }
@@ -50,7 +39,7 @@
   "type": "container",
   "jobDefinitionName": "biotech-fastqc",
   "timeout": {
-    "attemptDurationSeconds": 600
+    "attemptDurationSeconds": 1200
   },
   "retryStrategy": {
     "attempts": 1

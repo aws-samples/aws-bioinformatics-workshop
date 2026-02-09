@@ -1,7 +1,7 @@
 {
   "containerProperties": {
     "command": [],
-    "image": "REPLACE_WITH_IMAGE_FROM_ECR",
+    "image": "792480211720.dkr.ecr.us-west-2.amazonaws.com/biotech/samtools",
     "resourceRequirements": [
       {
         "type": "VCPU",
@@ -14,23 +14,12 @@
     ],
     "mountPoints": [
       {
-        "sourceVolume": "awscli",
-        "containerPath": "/opt/aws-cli",
-        "readOnly": false
-      },
-      {
         "sourceVolume": "data",
         "containerPath": "/mnt/fsx",
         "readOnly": false
       }
     ],
     "volumes": [
-      {
-        "name": "awscli",
-        "host": {
-          "sourcePath": "/opt/aws-cli"
-        }
-      },
       {
          "name": "data",
          "host": {

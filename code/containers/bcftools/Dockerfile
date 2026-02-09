@@ -45,7 +45,22 @@ COPY --from=build /bcftools-*/bcftools /usr/local/bin
 
 RUN apt-get -y update && \
     apt-get -y install \
-      libcurl3-gnutls && \
+      libcurl3-gnutls \
+      curl \
+      unzip && \
     apt-get clean
 
-ENTRYPOINT ["bcftools"]
+# Install AWS CLI v2
+RUN curl -s "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" && \
+    unzip -q /tmp/awscliv2.zip -d /tmp && \
+    /tmp/aws/install && \
+    rm -rf /tmp/aws /tmp/awscliv2.zip
+
+# Verify installation
+RUN aws --version
+
+# Copy entrypoint script
+COPY entrypoint.sh /opt/bin/entrypoint.sh
+RUN chmod +x /opt/bin/entrypoint.sh
+
+ENTRYPOINT ["/opt/bin/entrypoint.sh"]
